@@ -14,16 +14,16 @@
   stat:
     path: /etc/systemd/system/nexus.service
   register: nexus_systemd_service_file
-  when: nexus_dockerized == False
+  when: not nexus_dockerized
 
 - name: Check if sysv service is installed
   stat:
     path: /etc/init.d/nexus
   register: nexus_sysv_service_file
-  when: nexus_dockerized == False
+  when: not nexus_dockerized
 
 - include_tasks: nexus_purge.yml
-  when: nexus_dockerized == False and nexus_purge | default(false) | bool
+  when: not nexus_dockerized and nexus_purge | default(false) | bool
 
 - name: "Digest splited blob list var"
   include_vars: blob_vars.yml
@@ -32,7 +32,7 @@
 - import_tasks: nexus_install.yml
 
 - include_tasks: httpd_reverse_proxy_config.yml
-  when: nexus_dockerized == False and httpd_setup_enable | bool
+  when: not nexus_dockerized and httpd_setup_enable | bool
 
 - name: Configure nexus http proxy
   include_tasks: call_script.yml
@@ -50,7 +50,7 @@
       https_proxy_username: "{{ nexus_https_proxy_username }}"
       https_proxy_password: "{{ nexus_https_proxy_password }}"
       proxy_exclude_hosts: "{{ nexus_proxy_exclude_hosts }}"
-  when: nexus_dockerized == False and (nexus_with_http_proxy or nexus_with_https_proxy)
+  when: not nexus_dockerized and (nexus_with_http_proxy or nexus_with_https_proxy)
 
 - name: Deleting default repositories
   include_tasks: delete_repo_each.yml
