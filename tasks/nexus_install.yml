@@ -2,7 +2,7 @@
 
 - name: Get IP address of Nexus container
   shell: |
-    docker inspect {{ nexus_docker_container_name }} | grep -Po -m1 '^\s*"IPAddress": "\K([\d.]+)'
+    set -o pipefail && docker inspect {{ nexus_docker_container_name }} | grep -Po -m1 '^\s*"IPAddress": "\K([\d.]+)'
   register: _nexus_ip
   changed_when: no
   when: nexus_dockerized
@@ -41,7 +41,12 @@
   shell: |
     set -o pipefail && docker inspect {{ nexus_docker_container_name }} | grep -Po "version.*?\K([\d\.-]+)"
   changed_when: no
-  register: nexus_version_running
+  register: nexus_version_running_docker
+  when: nexus_dockerized
+
+- name: Overwrite running Nexus version when containerized
+  set_fact:
+    nexus_version_running: "{{ nexus_version_running_docker }}"
   when: nexus_dockerized
 
 - name: No version given => Version detection
