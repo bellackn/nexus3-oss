@@ -162,7 +162,6 @@ demonstrate this feature.
   become: yes
   vars:
     nexus_dockerized: True
-    nexus_version: 3.28.1
     nexus_data_dir: /opt/volumes/nexus/data
     nexus_os_user: "200"
     nexus_os_group: "200"
@@ -180,7 +179,7 @@ demonstrate this feature.
     - name: Start Nexus container
       docker_container:
         name: "{{ nexus_docker_container_name }}"
-        image: "sonatype/nexus3:{{ nexus_version }}"
+        image: "sonatype/nexus3:3.28.1"
         state: started
         restart_policy: unless-stopped
         volumes:
